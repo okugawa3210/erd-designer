@@ -45,6 +45,7 @@ type IndexQueryArgs = {
 };
 
 type ForeignKeyQueryArgs = {
+    relationName: string;
     childTableName: string;
     parentTableName: string;
     childColumnNames: string[];
@@ -403,6 +404,8 @@ class DatabaseDdlCreator {
         const queries = relationViewModels.map(relationViewModel => {
             const relationModel: RelationModel = relationViewModel.relationModel;
 
+            const relationName = relationModel.relationName;
+
             const childTableViewModel = erdDocument.findTableViewModel(relationModel.childTableModelId) as TableViewModel;
             const childTableModel = childTableViewModel.tableModel;
             const childSchema = erdDocument.findSchema(childTableModel.schemaId);
@@ -435,6 +438,7 @@ class DatabaseDdlCreator {
                 + this.escape(childTableModel.physicalName);
 
             return this.foreignKeyQuery({
+                relationName,
                 childTableName,
                 parentTableName,
                 childColumnNames: pairColumnNames.map(pair => pair.child),
@@ -469,7 +473,7 @@ const primaryKeyQueryForConstraint = (columns: string[]): string => {
 
 const foreignKeyQueryForAlter = (args: ForeignKeyQueryArgs): string => {
     const alterQueries = [
-        `ADD FOREIGN KEY (${args.childColumnNames.join(", ")})`,
+        `ADD ${args.relationName ? `CONSTRAINT ${args.relationName} ` : ''}FOREIGN KEY (${args.childColumnNames.join(", ")})`,
         `REFERENCES ${args.parentTableName} (${args.parentColumnNames.join(", ")})`,
         `ON UPDATE ${args.onUpdateAction}`,
         `ON DELETE ${args.onDeleteAction}`
