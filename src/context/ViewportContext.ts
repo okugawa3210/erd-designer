@@ -280,7 +280,11 @@ const initWheelHandler = ({ isDraggingRef, zoomTimerRef, viewport }: WheelHandle
             return;
         }
 
-        viewport.panBy(event.deltaX, event.deltaY);
+        if (event.shiftKey) {
+            viewport.panBy(event.deltaY, event.deltaX);
+        } else {
+            viewport.panBy(event.deltaX, event.deltaY);
+        }
     };
 };
 
