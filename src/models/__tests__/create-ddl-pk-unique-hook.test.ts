@@ -132,6 +132,8 @@ const buildTableOnlyDdl = (
 ): string => {
     const erdDocument = buildPkUniqueSampleDocument(databaseType, integerTypeName, varcharTypeName);
     return createDdl(erdDocument, {
+        dropTable: false,
+        dropSchema: false,
         withTable: true,
         withIndex: false,
         withForeignKey: false,

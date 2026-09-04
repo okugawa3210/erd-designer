@@ -77,6 +77,8 @@ const buildDocument = (args: BuildDocumentArgs): ErdDocument => {
 
 const buildDdl = (erdDocument: ErdDocument, withComment: boolean = false): string => {
     return createDdl(erdDocument, {
+        dropTable: false,
+        dropSchema: false,
         withTable: true,
         withIndex: false,
         withForeignKey: false,

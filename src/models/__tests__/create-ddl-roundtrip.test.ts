@@ -274,6 +274,8 @@ describe('create-ddl / ddl-loader roundtrip (MariaDB)', () => {
         const erdDocument = buildMariaDbSampleDocument();
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,
@@ -297,6 +299,8 @@ describe('create-ddl / ddl-loader roundtrip (MariaDB)', () => {
     test('reloads the generated DDL back into equivalent column definitions', () => {
         const sourceDocument = buildMariaDbSampleDocument();
         const ddl = createDdl(sourceDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: false, // MariaDB は ALTER ADD FOREIGN KEY をパースできないため対象外
@@ -356,6 +360,8 @@ describe('create-ddl / ddl-loader roundtrip (SQLite)', () => {
         const erdDocument = buildSqliteSampleDocument();
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,
@@ -450,6 +456,8 @@ describe('create-ddl / ddl-loader roundtrip (SQLite)', () => {
         });
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: false,
             withIndex: false,
             withForeignKey: true,
@@ -466,6 +474,8 @@ describe('create-ddl / ddl-loader roundtrip (SQLite)', () => {
     test('the generated DDL executes without syntax errors on real SQLite (sqlite3 CLI)', () => {
         const erdDocument = buildSqliteSampleDocument();
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,
@@ -484,6 +494,8 @@ describe('create-ddl / ddl-loader roundtrip (SQLite)', () => {
     test('reloads the generated DDL back into equivalent column definitions (excluding UNIQUE/FK)', () => {
         const sourceDocument = buildSqliteSampleDocument();
         const ddl = createDdl(sourceDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: false, // SQLite は ALTER ADD FOREIGN KEY 自体を出力しない
@@ -768,6 +780,8 @@ describe('create-ddl / ddl-loader roundtrip (Snowflake)', () => {
         const erdDocument = buildSnowflakeSampleDocument();
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,
@@ -828,6 +842,7 @@ describe('create-ddl / ddl-loader roundtrip (Snowflake)', () => {
         });
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false, dropSchema: false,
             withTable: true, withIndex: false, withForeignKey: false, withSchema: false,
             withComment: false, commentStyle: "logical_name", commentSeparator: " : "
         });
@@ -838,6 +853,8 @@ describe('create-ddl / ddl-loader roundtrip (Snowflake)', () => {
     test('reloads the generated DDL back into equivalent column definitions', () => {
         const sourceDocument = buildSnowflakeRoundtripDocument();
         const ddl = createDdl(sourceDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,
@@ -943,6 +960,8 @@ describe('create-ddl / ddl-loader roundtrip (Snowflake)', () => {
         });
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: false,
             withForeignKey: true,
@@ -1195,6 +1214,8 @@ describe('create-ddl / ddl-loader roundtrip (BigQuery)', () => {
         const erdDocument = buildBigQuerySampleDocument();
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,
@@ -1250,6 +1271,7 @@ describe('create-ddl / ddl-loader roundtrip (BigQuery)', () => {
         });
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false, dropSchema: false,
             withTable: true, withIndex: false, withForeignKey: false, withSchema: false,
             withComment: true, commentStyle: "with_description", commentSeparator: " : "
         });
@@ -1290,6 +1312,7 @@ describe('create-ddl / ddl-loader roundtrip (BigQuery)', () => {
         });
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false, dropSchema: false,
             withTable: true, withIndex: false, withForeignKey: false, withSchema: false,
             withComment: false, commentStyle: "logical_name", commentSeparator: " : "
         });
@@ -1369,6 +1392,8 @@ describe('create-ddl / ddl-loader roundtrip (BigQuery)', () => {
         });
 
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: false,
             withForeignKey: true,
@@ -1388,6 +1413,8 @@ describe('create-ddl / ddl-loader roundtrip (BigQuery)', () => {
     test('reloads the generated DDL back into equivalent column definitions', () => {
         const sourceDocument = buildBigQueryRoundtripDocument();
         const ddl = createDdl(sourceDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: true,
             withForeignKey: true,

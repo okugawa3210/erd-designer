@@ -761,6 +761,10 @@ const exportDdlInputSchema = {
     exportDdlSetting: z.object({
         fileName: z.string().optional()
             .describe("The output file name (informational only)."),
+        dropTable: z.boolean().optional()
+            .describe("Wheter to include DROP TABLE statements (default: true)."),
+        dropSchema: z.boolean().optional()
+            .describe("Wheter to include DROP SCHEMA statements (default: true)."),
         withTable: z.boolean().optional()
             .describe("Whether to include CREATE TABLE statements (default: true)."),
         withIndex: z.boolean().optional()
@@ -788,6 +792,8 @@ const initCallbackForExportDdl = (
         const exportSetting = erdDocument.erdSettingModel.exportDdlSetting;
 
         const ddl = createDdl(erdDocument, {
+            dropTable: exportDdlSetting?.dropTable ?? exportSetting.dropTable,
+            dropSchema: exportDdlSetting?.dropSchema ?? exportSetting.dropSchema,
             withTable: exportDdlSetting?.withTable ?? exportSetting.withTable,
             withIndex: exportDdlSetting?.withIndex ?? exportSetting.withIndex,
             withForeignKey: exportDdlSetting?.withForeignKey ?? exportSetting.withForeignKey,

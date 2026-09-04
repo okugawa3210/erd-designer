@@ -127,6 +127,8 @@ const buildFkSampleDocument = (databaseType: DatabaseType, integerTypeName: stri
 const buildFkOnlyDdl = (databaseType: DatabaseType, integerTypeName: string): string => {
     const erdDocument = buildFkSampleDocument(databaseType, integerTypeName);
     return createDdl(erdDocument, {
+        dropTable: false,
+        dropSchema: false,
         withTable: false,
         withIndex: false,
         withForeignKey: true,

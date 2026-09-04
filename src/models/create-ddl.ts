@@ -15,6 +15,8 @@ import { buildStructTypeExpression } from "~/models/struct-type-expression";
 import TableViewModel from "~/models/TableViewModel";
 
 type DdlOption = {
+    dropTable: boolean,
+    dropSchema: boolean,
     withTable: boolean,
     withIndex: boolean,
     withForeignKey: boolean,
@@ -121,6 +123,8 @@ class DatabaseDdlCreator {
     }
 
     public create(erdDocument: ErdDocument, option: DdlOption) {
+        const dropTableQueries = this.dropTableDdl(erdDocument, option);
+        const dropSchemaQueries = this.dropSchemaDdl(erdDocument, option);
         const schemaQueries = this.createSchemaDdl(erdDocument, option);
         const tableQueries = this.createTableDdl(erdDocument, option);
         const indexQueries = this.createIndexDdl(erdDocument, option);
@@ -128,9 +132,79 @@ class DatabaseDdlCreator {
         const commentQueries = this.createCommentDdl(erdDocument, option);
 
         return [
+            ...dropTableQueries, ...dropSchemaQueries,
             ...schemaQueries, ...tableQueries, ...indexQueries,
             ...foreignKeyQueries, ...commentQueries
         ].join("\n");
+    }
+
+    dropTableDdl(erdDocument: ErdDocument, option: DdlOption): string[] {
+        if (option.dropTable === false) {
+            return [];
+        }
+
+        const tableViewModels = erdDocument.getTableViewModels();
+        const relationViewModels = erdDocument.getRelationViewModels();
+
+        const childrenMap = new Map<string, string[]>();
+        tableViewModels.forEach(tableViewModel => {
+            childrenMap.set(tableViewModel.tableId, []);
+        });
+        relationViewModels.forEach(relationViewModel => {
+            const relation = relationViewModel.relationModel;
+            childrenMap.get(relation.parentTableModelId)?.push(relation.childTableModelId);
+        });
+
+        const visited = new Set<string>();
+        const sortedTableIds: string[] = [];
+        const visit = (tableId: string) => {
+            if (visited.has(tableId)) {
+                return;
+            }
+
+            visited.add(tableId);
+
+            for (const childTableId of childrenMap.get(tableId) ?? []) {
+                visit(childTableId);
+            }
+
+            sortedTableIds.push(tableId);
+        }
+
+        tableViewModels.forEach(tableViewModel => {
+            visit(tableViewModel.tableId);
+        });
+
+        const tableNames = new Map(
+            tableViewModels.map(tableViewModel => {
+                const tableModel = tableViewModel.tableModel;
+                const schemaModel = erdDocument.findSchema(tableModel.schemaId);
+
+                const tableName = (schemaModel != null ? `${this.escape(schemaModel.schemaName)}.` : "") + this.escape(tableModel.physicalName);
+
+                return [tableViewModel.tableId, tableName];
+            })
+        );
+
+        const queries = sortedTableIds.map(tableId => `DROP TABLE IF EXISTS ${tableNames.get(tableId)};`);
+
+        return (queries.length > 0) ? ["/* drop tables. */", ...queries, "\n"] : [];
+    }
+
+    dropSchemaDdl(erdDocument: ErdDocument, option: DdlOption): string[] {
+       if (option.dropSchema === false) {
+            return [];
+        }
+
+        const database = erdDocument.getDatabase();
+        if (database.supportsSchema === false) {
+            return [];
+        }
+
+        const schemaModels = erdDocument.schemaConfig.getSchemas();
+        const queries = schemaModels.map(schema => `DROP SCHEMA IF EXISTS ${this.escape(schema.schemaName)};`);
+
+        return (queries.length > 0) ? ["/* drop schemas. */", ...queries, "\n"] : [];
     }
 
     createSchemaDdl(erdDocument: ErdDocument, option: DdlOption): string[] {
