@@ -69,6 +69,8 @@ describe('array type DDL rendering regression (postgres unchanged)', () => {
     test('postgres: array column renders with the pre-existing INTEGER[] suffix format', () => {
         const erdDocument = buildArrayColumnDocument();
         const ddl = createDdl(erdDocument, {
+            dropTable: false,
+            dropSchema: false,
             withTable: true,
             withIndex: false,
             withForeignKey: false,

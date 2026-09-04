@@ -24,6 +24,8 @@ const ExportDdlView = ({ documentsHolder, isViewOpen, onClose }: ExportDdlViewPr
     const exportSetting: ExportDdlSettingModel = erdSetting.exportDdlSetting;
 
     const [fileName, setFileName] = React.useState<string>(exportSetting.fileName);
+    const [dropTable, setDropTable] = React.useState<boolean>(exportSetting.dropTable);
+    const [dropSchema, setDropSchema] = React.useState<boolean>(exportSetting.dropSchema);
     const [withTable, setWithTable] = React.useState<boolean>(exportSetting.withTable);
     const [withIndex, setWithIndex] = React.useState<boolean>(exportSetting.withIndex);
     const [withForeignKey, setWithForeignKey] = React.useState<boolean>(exportSetting.withForeignKey);
@@ -41,6 +43,7 @@ const ExportDdlView = ({ documentsHolder, isViewOpen, onClose }: ExportDdlViewPr
         }
 
         const ddlOption = {
+            dropTable, dropSchema,
             withTable, withIndex, withForeignKey, withSchema: withSchema && database.supportsSchema,
             withComment, commentStyle, commentSeparator
         };
@@ -53,7 +56,7 @@ const ExportDdlView = ({ documentsHolder, isViewOpen, onClose }: ExportDdlViewPr
         download(ddlFileName, downloadContent);
 
         const nextExportSetting = new ExportDdlSettingModel({
-            fileName, withTable, withIndex, withForeignKey, withSchema, withComment, commentStyle, commentSeparator
+            fileName, dropTable, dropSchema, withTable, withIndex, withForeignKey, withSchema, withComment, commentStyle, commentSeparator
         });
         // 設定が変更された場合のみ保存する
         if (nextExportSetting.equals(exportSetting) === false) {
@@ -72,6 +75,22 @@ const ExportDdlView = ({ documentsHolder, isViewOpen, onClose }: ExportDdlViewPr
 
     const optionPanel = (
         <Paper elevation={4} sx={{ p: 2 }}>
+            <Stack direction="column" spacing={2}>
+                <Typography variant="subtitle1" gutterBottom>DROP :</Typography>
+                <Grid container sx={{ justifyContent: "flex-start", alignItems: "center" }}>
+                    <Grid size={{ md: 3, sm: 6 }}>
+                        <FormControlLabel label="Tables" control={
+                            <Checkbox checked={dropTable === true}
+                                onChange={(event) => setDropTable(event.target.checked)} />} />
+                    </Grid>
+                    <Grid size={{ md: 3, sm: 6 }}>
+                        <FormControlLabel label="Schemas" control={
+                            <Checkbox checked={dropSchema === true}
+                                onChange={(event) => setDropSchema(event.target.checked)} />} />
+                    </Grid>
+                </Grid>
+            </Stack>
+            <Divider sx={{ my: 2 }} />
             <Stack direction="column" spacing={2}>
                 <Typography variant="subtitle1" gutterBottom>CREATE :</Typography>
                 <Grid container sx={{ justifyContent: "flex-start", alignItems: "center" }}>
