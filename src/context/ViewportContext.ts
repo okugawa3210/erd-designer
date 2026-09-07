@@ -261,7 +261,7 @@ const initWheelHandler = ({ isDraggingRef, zoomTimerRef, viewport }: WheelHandle
         event.preventDefault();
         event.stopPropagation();
 
-        if (event.ctrlKey || event.metaKey) {
+        if ((event.ctrlKey === true) || (event.metaKey === true)) {
             const changed = viewport.zoomWheel(event.deltaY);
             if (changed === false) {
                 return;
@@ -280,11 +280,15 @@ const initWheelHandler = ({ isDraggingRef, zoomTimerRef, viewport }: WheelHandle
             return;
         }
 
-        if (event.shiftKey) {
-            viewport.panBy(event.deltaY, event.deltaX);
-        } else {
-            viewport.panBy(event.deltaX, event.deltaY);
+        // Windows/Linux では Shift+ホイールの軸入替をブラウザの既定動作が担うため、
+        // preventDefault 済みのこのハンドラでは deltaX が 0 のまま届く。
+        // macOS は OS が入替済み(deltaX != 0)なので、ここで再度入れ替えてはならない。
+        if ((event.shiftKey === true) && (event.deltaX === 0)) {
+            viewport.panBy(event.deltaY, 0);
+            return;
         }
+
+        viewport.panBy(event.deltaX, event.deltaY);
     };
 };
 
