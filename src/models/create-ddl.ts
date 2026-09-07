@@ -164,9 +164,9 @@ class DatabaseDdlCreator {
 
             visited.add(tableId);
 
-            for (const childTableId of childrenMap.get(tableId) ?? []) {
+            (childrenMap.get(tableId) ?? []).forEach(childTableId => {
                 visit(childTableId);
-            }
+            });
 
             sortedTableIds.push(tableId);
         }
